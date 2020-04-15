@@ -102,7 +102,35 @@ def atomeval(atoms):
             metastack[stackname].append(atoms[index])
         else:
            try:
-               macrotable[atoms[index]]
+               macrotable[atoms[index][1]]
                atomeval(macrostack[atoms[index]])
            except:
-               metastack[stackname].append(atoms[index])
+               if atoms[index][1] == "+":
+                   addbuiltin()
+               if atoms[index][1] == "-":
+                    subtractbuiltin()
+               if atoms[index][1] == "*":
+                    multiplybuiltin()
+               if atoms[index][1] == "/":
+                    dividebuiltin()
+               if atoms[index][1] == ">":
+               if atoms[index][1] == "<":
+               if atoms[index][1] == "top":
+               if atoms[index][1] == "if":
+                   
+
+
+
+def addbuiltin():
+    GNDN = 0
+
+def subtractbuiltin():
+    GNDN = 0
+
+def multiplybuiltin():
+    GNDN = 0
+
+def dividebuiltin():
+    GNDN = 0
+                    
+            

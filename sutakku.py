@@ -22,10 +22,7 @@
 import readline
 from sfuncs import *
 
-typedline =[]
-metastack = [["main" , []]]
-stackname ="main"
-namenum = 0
+
 
 print("Welcome to Sutakku")
 print("Copyright 2020 SpaceBudokan")
@@ -34,10 +31,12 @@ print("")
 print("I'm so glad you're here!")
 print("Type \"bye\" to Exit")
 
-
+print(generictype)
 while typedline != "bye":
-    typedline = input(metastack[namenum][0] + ">")
-    output = parse(typedline)
-    print(output)
+    typedline = input(stackname + ">")
+    atoms = parse(typedline)
+    atomeval(atoms)
+    print(metastack)
+ 
 
 print("Goodbye! I'll miss you...")

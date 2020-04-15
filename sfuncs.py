@@ -106,23 +106,45 @@ def atomeval(atoms):
                atomeval(macrostack[atoms[index]])
            except:
                if atoms[index][1] == "+":
-                   addbuiltin()
-               if atoms[index][1] == "-":
+                   result = addbuiltin()
+                   if result != 0:
+                       return "Atom #" + index + ": " + result
+               elif atoms[index][1] == "-":
                     subtractbuiltin()
-               if atoms[index][1] == "*":
+               elif atoms[index][1] == "*":
                     multiplybuiltin()
-               if atoms[index][1] == "/":
+               elif atoms[index][1] == "/":
                     dividebuiltin()
-               if atoms[index][1] == ">":
-               if atoms[index][1] == "<":
-               if atoms[index][1] == "top":
-               if atoms[index][1] == "if":
+               elif atoms[index][1] == ">":
+                   greaterthanbuiltin()
+               elif atoms[index][1] == "<":
+                   lessthanbuilin()
+               elif atoms[index][1] == "top":
+                   topbuiltin()
+               elif atoms[index][1] == "if":
+                   ifbuiltin()
+               elif atoms[index][1] == "pop":
+                   popbuiltin()
+               elif atoms[index][1] == "dup":
+                   dupbuiltin()
+               else:
+                   metastack[stackname].append(atoms[index])
                    
 
 
 
 def addbuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"+\""
+    elif metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        return "Top two atoms must be of type int or float for addition"
+    else:
+        addend1 = metastack[stackname].pop()
+        addend2 = metastack[stackname].pop()
+        return 0
+        
+        
 
 def subtractbuiltin():
     GNDN = 0
@@ -133,4 +155,20 @@ def multiplybuiltin():
 def dividebuiltin():
     GNDN = 0
                     
-            
+def greaterthanbuiltin():
+    GNDN = 0
+
+def lessthanbuiltin():
+    GNDN = 0
+
+def topbuiltin():
+    GNDN = 0
+
+def ifbuiltin():
+    GNDN = 0
+
+def popbuiltin():
+    GNDN = 0
+
+def dupbuiltin():
+    GNDN = 0

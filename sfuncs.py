@@ -75,31 +75,34 @@ def parse(ptext):
                         i += 1
 
                 slicestop = i
-                
-                output.append([generictype, ptext[slicestart:slicestop]])
+
+                try:
+                    int(ptext[slicestart:slicestop])
+                    inty = int(ptext[slicestart:slicestop])
+                    output.append([inttype, inty])
+                except:
+                    try:
+                        float(ptext[slicestart:slicestop])
+                        floaty = float(ptext[slicestart:slicestop])
+                        output.append([floattype, floaty])
+                    except:
+                        texty =  ptext[slicestart:slicestop]
+                        output.append([generictype, texty])
             i += 1
             
     return output
 
 
 #atomeval() evaluates atoms
-#integers will be cast to int, Floats to float, and anything else will be checked to see if it is defined. If it is, it will be evaluated
+#Integers, floats, and strings will be placed on the stack, and anything else will be checked to see if it is defined. If it is, it will be evaluated
 
 def atomeval(atoms):
     for index in range(len(atoms)):
-        if atoms[index][0] == inttype or atoms[index][0] == stringtype:
+        if atoms[index][0] != generictype:
             metastack[stackname].append(atoms[index])
         else:
-            try:
-                int(atoms[index][1])
-                atoms[index][0] = inttype
-                atoms[index][1] = int(atoms[index][1])
-                metastack[stackname].append(atoms[index])
-            except:
-                try:
-                    float(atoms[index][1])
-                    atoms[index][0] = floattype
-                    atoms[index][1] = float(atoms[index][1])
-                    metastack[stackname].append(atoms[index])
-                except:
-                    metastack[stackname].append(atoms[index])
+           try:
+               macrotable[atoms[index]]
+               atomeval(macrostack[atoms[index]])
+           except:
+               metastack[stackname].append(atoms[index])

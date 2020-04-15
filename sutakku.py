@@ -24,7 +24,7 @@ from sfuncs import *
 
 typedline =[]
 metastack = [["main" , []]]
-stackname =" main"
+stackname ="main"
 namenum = 0
 
 print("Welcome to Sutakku")
@@ -34,7 +34,6 @@ print("")
 print("I'm so glad you're here!")
 print("Type \"bye\" to Exit")
 
-print(stackname[0].isspace())
 
 while typedline != "bye":
     typedline = input(metastack[namenum][0] + ">")

@@ -35,7 +35,9 @@ print(generictype)
 while typedline != "bye":
     typedline = input(stackname + ">")
     atoms = parse(typedline)
-    atomeval(atoms)
+    result = atomeval(atoms)
+    if result != 0:
+        print(result)
     print(metastack)
  
 

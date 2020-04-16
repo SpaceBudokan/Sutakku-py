@@ -18,7 +18,6 @@ generictype = 3
 #strings will be looked up to see if they are defined. If they are undefined,
 #they will be placed onto the stack as strings
 
-
 def parse(ptext):
     slicestart = 0
     slicestop = 0
@@ -108,7 +107,7 @@ def atomeval(atoms):
                if atoms[index][1] == "+":
                    result = addbuiltin()
                    if result != 0:
-                       return "Atom #" + index + ": " + result
+                       return "Atom #" + str(index) + ": " + str(result)
                elif atoms[index][1] == "-":
                     subtractbuiltin()
                elif atoms[index][1] == "*":
@@ -140,8 +139,18 @@ def addbuiltin():
        metastack[stackname][-2][0] == stringtype:
         return "Top two atoms must be of type int or float for addition"
     else:
-        addend1 = metastack[stackname].pop()
-        addend2 = metastack[stackname].pop()
+        if metastack[stackname][-1][0] == floattype or \
+           metastack[stackname][-2][0] == floattype:
+            addend1 = metastack[stackname].pop()
+            addend2 = metastack[stackname].pop()
+            thesum = float(addend1[1]) + float(addend2[1])
+            metastack[stackname].append([floattype, str(thesum)])
+        else:
+            addend1 = metastack[stackname].pop()
+            addend2 = metastack[stackname].pop()
+            thesum = int(addend1[1]) + int(addend2[1])
+            metastack[stackname].append([inttype, str(thesum)])
+            
         return 0
         
         

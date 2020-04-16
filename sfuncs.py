@@ -86,50 +86,55 @@ def parse(ptext):
 
 def atomeval(atoms):
     for index in range(len(atoms)):
-       try:
-           macrotable[atoms[index][1]]
-           atomeval(macrotable[atoms[index]])
-       except:
-           try:
-               int(atoms[index][1])
-               metastack[stackname].append([inttype, atoms[index][1]])
-           except:
-               try:
-                   float(atoms[index][1])
-                   metastack[stackname].append([floattype, atoms[index][1]])
-               except:
-                   if atoms[index][1] == "define":
-                       result = definebuiltin()
-                       if result !=0:
-                           return "Atom #" + str(index) + ": " + str(result)
-                   elif atoms[index][1] == "+":
-                       result = addbuiltin()
-                       if result != 0:
-                           return "Atom #" + str(index) + ": " + str(result)
-                   elif atoms[index][1] == "-":
+        if atoms[index][1] in macrotable:
+            result = atomeval([macrotable[atoms[index][1]]])
+        else:
+            try:
+                int(atoms[index][1])
+                metastack[stackname].append([inttype, atoms[index][1]])
+            except:
+                try:
+                    float(atoms[index][1])
+                    metastack[stackname].append([floattype, atoms[index][1]])
+                except:
+                    result = 0
+                    if atoms[index][1] == "define":
+                        result = definebuiltin()
+                    elif atoms[index][1] == "+":
+                        result = addbuiltin()
+                    elif atoms[index][1] == "-":
                         subtractbuiltin()
-                   elif atoms[index][1] == "*":
+                    elif atoms[index][1] == "*":
                         multiplybuiltin()
-                   elif atoms[index][1] == "/":
+                    elif atoms[index][1] == "/":
                         dividebuiltin()
-                   elif atoms[index][1] == ">":
-                       greaterthanbuiltin()
-                   elif atoms[index][1] == "<":
-                       lessthanbuilin()
-                   elif atoms[index][1] == "top":
-                       topbuiltin()
-                   elif atoms[index][1] == "if":
-                       ifbuiltin()
-                   elif atoms[index][1] == "pop":
-                       popbuiltin()
-                   elif atoms[index][1] == "dup":
-                       dupbuiltin()
-                   else:
-                       metastack[stackname].append([stringtype, atoms[index][1]])
-
+                    elif atoms[index][1] == ">":
+                        greaterthanbuiltin()
+                    elif atoms[index][1] == "<":
+                        lessthanbuilin()
+                    elif atoms[index][1] == "top":
+                        topbuiltin()
+                    elif atoms[index][1] == "if":
+                        ifbuiltin()
+                    elif atoms[index][1] == "pop":
+                        popbuiltin()
+                    elif atoms[index][1] == "dup":
+                        dupbuiltin()
+                    else:
+                        metastack[stackname].append([stringtype, atoms[index][1]])
+                    if result != 0:
+                        return "Atom #" + str(index) + ": " + str(result)   
+  
+    return 0
 
 def definebuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack requires at least two atoms for definition"
+    key = metastack[stackname][-1][1]
+    metastack[stackname].pop()
+    definition = metastack[stackname][-1]
+    metastack[stackname].pop()
+    macrotable[key] = definition  
     return 0
 
 def addbuiltin():

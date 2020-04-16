@@ -128,11 +128,11 @@ def atomeval(atoms):
                     elif atoms[index][1] == "+":
                         result = addbuiltin()
                     elif atoms[index][1] == "-":
-                        subtractbuiltin()
+                        result = subtractbuiltin()
                     elif atoms[index][1] == "*":
-                        multiplybuiltin()
+                        result = multiplybuiltin()
                     elif atoms[index][1] == "/":
-                        dividebuiltin()
+                        result = dividebuiltin()
                     elif atoms[index][1] == ">":
                         greaterthanbuiltin()
                     elif atoms[index][1] == "<":
@@ -176,38 +176,96 @@ def stackbuiltin():
         metastack[stackname] = []
         return 0
 
+#this terminology isn't 100% correct
 def addbuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack must be at least two atoms for \"+\""
     elif metastack[stackname][-1][0] == stringtype or \
        metastack[stackname][-2][0] == stringtype:
-        return "Top two atoms must be of type int or float for addition"
+        return "Top two atoms must be of type int or float for \"+\""
     else:
         if metastack[stackname][-1][0] == floattype or \
            metastack[stackname][-2][0] == floattype:
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
-            thesum = float(addend1[1]) + float(addend2[1])
-            metastack[stackname].append([floattype, str(thesum)])
+            thesum = float(addend2[1]) + float(addend1[1])
+            atomeval([[floattype, str(thesum)]])
         else:
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
-            thesum = int(addend1[1]) + int(addend2[1])
-            metastack[stackname].append([inttype, str(thesum)])
+            thesum = int(addend2[1]) + int(addend1[1])
+            atomeval([[inttype, str(thesum)]])
             
         return 0
         
         
-
+# the proper terms for subtraction aren't "addends"or "sums." I don't care.
 def subtractbuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"-\""
+    elif metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        return "Top two atoms must be of type int or float for \"-\""
+    else:
+        if metastack[stackname][-1][0] == floattype or \
+           metastack[stackname][-2][0] == floattype:
+            addend1 = metastack[stackname].pop()
+            addend2 = metastack[stackname].pop()
+            thesum = float(addend2[1]) -  float(addend1[1])
+            atomeval([[floattype, str(thesum)]])
+        else:
+            addend1 = metastack[stackname].pop()
+            addend2 = metastack[stackname].pop()
+            thesum = int(addend2[1]) - int(addend1[1])
+            atomeval([[inttype, str(thesum)]])
+            
+        return 0
+        
 
 def multiplybuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"*\""
+    elif metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        return "Top two atoms must be of type int or float for \"*\""
+    else:
+        if metastack[stackname][-1][0] == floattype or \
+           metastack[stackname][-2][0] == floattype:
+            multiplier = metastack[stackname].pop()
+            multiplicand = metastack[stackname].pop()
+            product = float(multiplicand[1]) *  float(multiplier[1])
+            atomeval([[floattype, str(product)]])
+        else:
+            multiplier = metastack[stackname].pop()
+            multiplicand = metastack[stackname].pop()
+            product = int(multiplicand[1]) * int(multiplier[1])
+            atomeval([[inttype, str(product)]])
+            
+        return 0
+
 
 def dividebuiltin():
-    GNDN = 0
-                    
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"*\""
+    elif metastack[stackname][-1][1] == "0":
+        return "Cannot divide by zero"
+    elif metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        return "Top two atoms must be of type int or float for \"*\""
+    else:
+        if metastack[stackname][-1][0] == floattype or \
+           metastack[stackname][-2][0] == floattype:
+            divisor = metastack[stackname].pop()
+            dividend = metastack[stackname].pop()
+            quotient = float(dividend[1]) /  float(divisor[1])
+            atomeval([[floattype, str(quotient)]])
+        else:
+            divisor = metastack[stackname].pop()
+            dividend = metastack[stackname].pop()
+            quotient = int(dividend[1]) / int(divisor[1])
+            atomeval([[inttype, str(quotient)]])
+        return 0
+    
 def greaterthanbuiltin():
     GNDN = 0
 

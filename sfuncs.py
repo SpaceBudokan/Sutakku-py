@@ -46,47 +46,36 @@ def parse(ptext):
                         depth -= 1
 
                     i += 1
-                i -= 1
-                slicestop = i
+                slicestop = i - 1
                 output.append([stringtype, ptext[slicestart:slicestop]])
             #next we check for comments
-            if ptext[i] == "(":
-                depth += 1
-                i += 1
-                while depth != 0 and i < len(ptext):
-                    if ptext[i] == "(":
-                        depth += 1
-                    if ptext[i] == ")":
-                        depth -= 1
-
+            if i != len(ptext):
+                if ptext[i] == "(":
+                    depth += 1
                     i += 1
-                i -= 1
+                    while depth != 0 and i < len(ptext):
+                        if ptext[i] == "(":
+                            depth += 1
+                        if ptext[i] == ")":
+                            depth -= 1
 
-            #then we check for anything else
-            if ptext[i] != " " and i < len(ptext) - 1:
-                slicestart = i
-                flag = 0
-                i += 1
-                while flag == 0 and i < len(ptext):
-                    if ptext[i] == " ":
-                        flag = 1
-                    else:
                         i += 1
 
-                slicestop = i
+            #then we check for anything else
+            if i !=len(ptext):
+                if ptext[i] != " " and i < len(ptext):
+                    slicestart = i
+                    flag = 0
+                    i += 1
+                    while flag == 0 and i < len(ptext):
+                        if ptext[i] == " ":
+                            flag = 1
+                        else:
+                            i += 1
 
-                try:
-                    int(ptext[slicestart:slicestop])
-                    inty = int(ptext[slicestart:slicestop])
-                    output.append([inttype, inty])
-                except:
-                    try:
-                        float(ptext[slicestart:slicestop])
-                        floaty = float(ptext[slicestart:slicestop])
-                        output.append([floattype, floaty])
-                    except:
-                        texty =  ptext[slicestart:slicestop]
-                        output.append([generictype, texty])
+                    slicestop = i
+                    
+                    output.append([generictype, ptext[slicestart:slicestop]])
             i += 1
             
     return output
@@ -97,40 +86,51 @@ def parse(ptext):
 
 def atomeval(atoms):
     for index in range(len(atoms)):
-        if atoms[index][0] != generictype:
-            metastack[stackname].append(atoms[index])
-        else:
+       try:
+           macrotable[atoms[index][1]]
+           atomeval(macrotable[atoms[index]])
+       except:
            try:
-               macrotable[atoms[index][1]]
-               atomeval(macrostack[atoms[index]])
+               int(atoms[index][1])
+               metastack[stackname].append([inttype, atoms[index][1]])
            except:
-               if atoms[index][1] == "+":
-                   result = addbuiltin()
-                   if result != 0:
-                       return "Atom #" + str(index) + ": " + str(result)
-               elif atoms[index][1] == "-":
-                    subtractbuiltin()
-               elif atoms[index][1] == "*":
-                    multiplybuiltin()
-               elif atoms[index][1] == "/":
-                    dividebuiltin()
-               elif atoms[index][1] == ">":
-                   greaterthanbuiltin()
-               elif atoms[index][1] == "<":
-                   lessthanbuilin()
-               elif atoms[index][1] == "top":
-                   topbuiltin()
-               elif atoms[index][1] == "if":
-                   ifbuiltin()
-               elif atoms[index][1] == "pop":
-                   popbuiltin()
-               elif atoms[index][1] == "dup":
-                   dupbuiltin()
-               else:
-                   metastack[stackname].append(atoms[index])
-                   
+               try:
+                   float(atoms[index][1])
+                   metastack[stackname].append([floattype, atoms[index][1]])
+               except:
+                   if atoms[index][1] == "define":
+                       result = definebuiltin()
+                       if result !=0:
+                           return "Atom #" + str(index) + ": " + str(result)
+                   elif atoms[index][1] == "+":
+                       result = addbuiltin()
+                       if result != 0:
+                           return "Atom #" + str(index) + ": " + str(result)
+                   elif atoms[index][1] == "-":
+                        subtractbuiltin()
+                   elif atoms[index][1] == "*":
+                        multiplybuiltin()
+                   elif atoms[index][1] == "/":
+                        dividebuiltin()
+                   elif atoms[index][1] == ">":
+                       greaterthanbuiltin()
+                   elif atoms[index][1] == "<":
+                       lessthanbuilin()
+                   elif atoms[index][1] == "top":
+                       topbuiltin()
+                   elif atoms[index][1] == "if":
+                       ifbuiltin()
+                   elif atoms[index][1] == "pop":
+                       popbuiltin()
+                   elif atoms[index][1] == "dup":
+                       dupbuiltin()
+                   else:
+                       metastack[stackname].append([stringtype, atoms[index][1]])
 
 
+def definebuiltin():
+    GNDN = 0
+    return 0
 
 def addbuiltin():
     if len(metastack[stackname]) < 2:

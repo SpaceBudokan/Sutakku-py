@@ -38,8 +38,7 @@ generictype = 3
 #Parentheses, "(" and ")", are used for comments. Anything between them will be ignored. They can be nested.
 #Anything else delimited by spaces will be single atoms. They will be evaluated.
 #Numbers will be automatically typed to float or int as appropriate. Unquoted
-#strings will be looked up to see if they are defined. If they are undefined,
-#they will be placed onto the stack as strings
+#strings will be looked up to see if they are defined. If they are defined, their definition will be evaluated. If they are undefined, they will throw an error
 
 def parse(ptext):
     slicestart = 0
@@ -109,8 +108,13 @@ def parse(ptext):
 
 def atomeval(atoms):
     for index in range(len(atoms)):
-        if atoms[index][1] in macrotable:
-            result = atomeval([macrotable[atoms[index][1]]])
+        if atoms[index][0] == stringtype:
+            metastack[stackname].append(atoms[index])
+        elif atoms[index][1] in macrotable:
+            toparse = macrotable[atoms[index][1]]
+            parsed = parse(toparse[1])
+            result = atomeval(parsed)
+            return result
         else:
             try:
                 int(atoms[index][1])
@@ -134,7 +138,7 @@ def atomeval(atoms):
                     elif atoms[index][1] == "/":
                         result = dividebuiltin()
                     elif atoms[index][1] == ">":
-                        greaterthanbuiltin()
+                        result = greaterthanbuiltin()
                     elif atoms[index][1] == "<":
                         lessthanbuilin()
                     elif atoms[index][1] == "top":
@@ -146,7 +150,8 @@ def atomeval(atoms):
                     elif atoms[index][1] == "dup":
                         dupbuiltin()
                     else:
-                        metastack[stackname].append([stringtype, atoms[index][1]])
+                        result = "Atom undefined"
+                        
                     if result != 0:
                         return "Atom #" + str(index) + ": " + str(result)   
   
@@ -219,7 +224,7 @@ def subtractbuiltin():
             thesum = int(addend2[1]) - int(addend1[1])
             atomeval([[inttype, str(thesum)]])
             
-        return 0
+    return 0
         
 
 def multiplybuiltin():
@@ -267,7 +272,29 @@ def dividebuiltin():
         return 0
     
 def greaterthanbuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \">\""
+    if metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        if metastack[stackname][-1][0] == \
+           metastack[stackname][-2][0]:
+            top = metastack[stackname].pop()
+            second = metastack[stackname].pop()
+            if second[1] > top[1]:
+                atomeval([[inttype, 1]])
+            else:
+                atomeval([[inttype, 0]])
+        else:
+            return "Both operands must be numerical, or both strings"
+    else:
+        top = metastack[stackname].pop()
+        second = metastack[stackname].pop()
+        if second[1] > top[1]:
+            atomeval([[inttype, 1]])
+        else:
+            atomeval([[inttype, 0]])
+    return 0
+
 
 def lessthanbuiltin():
     GNDN = 0

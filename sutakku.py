@@ -108,6 +108,7 @@ def parse(ptext):
 
 def atomeval(atoms):
     for index in range(len(atoms)):
+        print("index " + str(index))
         if atoms[index][0] == stringtype:
             metastack[stackname].append(atoms[index])
         elif atoms[index][1] in macrotable:
@@ -152,7 +153,28 @@ def atomeval(atoms):
                     elif atoms[index][1] == "to":
                         result = tobuiltin()
                     elif atoms[index][1] == "if":
-                        ifbuiltin()
+                        if len(metastack[stackname]) < 1:
+                            result = "Stack requires at least one atom for branching"
+                        elif metastack[stackname].pop() == [inttype, "0"]:
+                            print("falsehood")
+                            depth = 1
+                            i = index
+                            while i < len(atoms) and depth != 0:
+                                print(atoms[i])
+                                print(depth)
+                                if atoms[i] == [generictype, "if"]:
+                                    depth += 1
+                                if atoms[i] == [generictype, "then"]:
+                                    depth -= 1
+                                i += 1
+                            
+                            if depth != 0:
+                                result =  "Unmatched if-then statements"
+                            else:
+                                index = i
+                                result = 0
+                                
+                            
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
@@ -370,8 +392,7 @@ def tobuiltin():
         else:
             return metastack[stackname][-1][1] + " is not a stack"
     
-def ifbuiltin():
-    GNDN = 0
+
 
 
 

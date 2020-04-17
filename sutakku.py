@@ -140,17 +140,21 @@ def atomeval(atoms):
                     elif atoms[index][1] == ">":
                         result = greaterthanbuiltin()
                     elif atoms[index][1] == "<":
-                        lessthanbuilin()
+                        result = lessthanbuiltin()
                     elif atoms[index][1] == "top":
-                        topbuiltin()
+                        result = topbuiltin()
+                    elif atoms[index][1] == "pop":
+                        result = popbuiltin()
+                    elif atoms[index][1] == "dup":
+                        result = dupbuiltin()
+                    elif atoms[index][1] == "eval":
+                        result = evalbuiltin()
+                    elif atoms[index][1] == "to":
+                        result = tobuiltin()
                     elif atoms[index][1] == "if":
                         ifbuiltin()
-                    elif atoms[index][1] == "pop":
-                        popbuiltin()
-                    elif atoms[index][1] == "dup":
-                        dupbuiltin()
                     else:
-                        result = "Atom undefined"
+                        result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
                     if result != 0:
                         return "Atom #" + str(index) + ": " + str(result)   
@@ -297,19 +301,78 @@ def greaterthanbuiltin():
 
 
 def lessthanbuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \">\""
+    if metastack[stackname][-1][0] == stringtype or \
+       metastack[stackname][-2][0] == stringtype:
+        if metastack[stackname][-1][0] == \
+           metastack[stackname][-2][0]:
+            top = metastack[stackname].pop()
+            second = metastack[stackname].pop()
+            if second[1] < top[1]:
+                atomeval([[inttype, 1]])
+            else:
+                atomeval([[inttype, 0]])
+        else:
+            return "Both operands must be numerical, or both strings"
+    else:
+        top = metastack[stackname].pop()
+        second = metastack[stackname].pop()
+        if second[1] < top[1]:
+            atomeval([[inttype, 1]])
+        else:
+            atomeval([[inttype, 0]])
+    return 0
 
+#print the top of stack
 def topbuiltin():
-    GNDN = 0
+    if len(metastack[stackname]) < 1:
+        return stackname + " is empty"
+    else:
+        print(metastack[stackname][-1][1])
+        return 0
 
+
+def popbuiltin():
+    if len(metastack[stackname]) < 1:
+        return stackname + " is empty"
+    else:
+        metastack[stackname].pop()
+        return 0
+
+def dupbuiltin():
+    if len(metastack[stackname]) < 1:
+        return "Stack must be at least one atom for \"dup\""
+    else:
+        metastack[stackname].append(metastack[stackname][-1])
+        return 0
+
+def evalbuiltin():
+    if len(metastack[stackname]) < 1:
+        return stackname + " is empty"
+    else:
+        toparse = metastack[stackname].pop()
+        parsed = parse(toparse[1])
+        result = atomeval(parsed)
+        return result
+
+def tobuiltin():
+    global stackname
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"to\""
+    else:
+        if metastack[stackname][-1][1] in metastack:
+            oldstack = stackname
+            stackname = metastack[stackname].pop().pop()
+            metastack[stackname].append(metastack[oldstack].pop())
+            stackname = oldstack
+            return 0
+        else:
+            return metastack[stackname][-1][1] + " is not a stack"
+    
 def ifbuiltin():
     GNDN = 0
 
-def popbuiltin():
-    GNDN = 0
-
-def dupbuiltin():
-    GNDN = 0
 
 
 
@@ -318,17 +381,13 @@ def dupbuiltin():
 
 
 
-
-
-
-print("Welcome to Sutakku")
+print("Welcome to Sutakku (Python)")
 print("Copyright 2020 SpaceBudokan")
 print("This program comes with ABSOLUTELY NO WARRANTY; This is free software, and you are welcome to redistribute it under certain conditions.")
 print("")
 print("I'm so glad you're here!")
 print("Type \"bye\" to Exit")
 
-print(generictype)
 while typedline != "bye":
     typedline = input(stackname + ">")
     atoms = parse(typedline)

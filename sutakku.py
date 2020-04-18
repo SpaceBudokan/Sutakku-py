@@ -167,11 +167,10 @@ def atomeval(atoms):
                                     depth -= 1
                                 i += 1
                             if depth != 0:
-                                result =  "Unmatched if-then statements"
+                                result =  "Unmatched 'if'"
                             else:
                                 index = i
                                 result = 0
-
                         else:
                             depth = 1
                             i = index + 1
@@ -183,11 +182,16 @@ def atomeval(atoms):
                                 i += 1
                             if depth !=0:
                                 index = i
-                                result = "Unmatched if-then statements"
+                                result = "Unmatched 'if'"
                             else:
                                 result = atomeval(atoms[index + 1:i - 1])
                                 index = i
-                                
+                    elif atoms[index] == [generictype, "then"]:
+                        result = "Unmatched 'then' "
+                    elif atoms[index] == [generictype, "pull"]:
+                        result = pullbuiltin()
+                    elif atoms[index] == [generictype, "bury"]:
+                        result = burybuiltin()
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
@@ -405,10 +409,34 @@ def tobuiltin():
             return 0
         else:
             return metastack[stackname][-1][1] + " is not a stack"
-    
 
+def pullbuiltin():
+    print(int(len(metastack[stackname])))
+    print(int(metastack[stackname][-1][1]))
+    if metastack[stackname][-1][0] != inttype:
+        return "'pull' requires integer"
+    elif len(metastack[stackname])-1 < int(metastack[stackname][-1][1]):
+        metastack[stackname].pop()
+        return "Stack is not deep enough"
+    else:
+        numpull = metastack[stackname].pop()
+        numpull = -1 - int(numpull[1])
+        pulledelement = metastack[stackname].pop(numpull)
+        metastack[stackname].append(pulledelement)
+        return 0
 
-
+def burybuiltin():
+    if metastack[stackname][-1][0] != inttype:
+        return "'bury' requires integer"
+    elif len(metastack[stackname]) < int(metastack[stackname][-1][1]) - 1:
+        metastack[stackname].pop()
+        return "Stack is not deep enough"
+    else:
+        numpull = metastack[stackname].pop()
+        numpull = -1 - int(numpull[1])
+        pulledelement = metastack[stackname].pop(numpull)
+        metastack[stackname].insert(numpull, pulledelement)
+        return 0
 
 
 
@@ -429,6 +457,5 @@ while typedline != "bye":
         if result != 0:
             print(result)
         print(metastack)
-
 
 print("Goodbye! I'll miss you...")

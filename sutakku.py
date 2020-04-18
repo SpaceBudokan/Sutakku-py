@@ -412,9 +412,7 @@ def tobuiltin():
 
 
 
-
-
-
+#main
 
 print("Welcome to Sutakku (Python)")
 print("Copyright 2020 SpaceBudokan")
@@ -425,11 +423,12 @@ print("Type \"bye\" to Exit")
 
 while typedline != "bye":
     typedline = input(stackname + ">")
-    atoms = parse(typedline)
-    result = atomeval(atoms)
-    if result != 0:
-        print(result)
-    print(metastack)
+    if typedline != "bye":
+        atoms = parse(typedline)
+        result = atomeval(atoms)
+        if result != 0:
+            print(result)
+        print(metastack)
 
 
 print("Goodbye! I'll miss you...")

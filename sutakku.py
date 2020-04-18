@@ -107,8 +107,8 @@ def parse(ptext):
 #Integers, floats, and strings will be placed on the stack, and anything else will be checked to see if it is defined. If it is, it will be evaluated
 
 def atomeval(atoms):
-    for index in range(len(atoms)):
-        print("index " + str(index))
+    index = 0
+    while index < len(atoms):
         if atoms[index][0] == stringtype:
             metastack[stackname].append(atoms[index])
         elif atoms[index][1] in macrotable:
@@ -156,31 +156,45 @@ def atomeval(atoms):
                         if len(metastack[stackname]) < 1:
                             result = "Stack requires at least one atom for branching"
                         elif metastack[stackname].pop() == [inttype, "0"]:
-                            print("falsehood")
                             depth = 1
                             i = index
                             while i < len(atoms) and depth != 0:
-                                print(atoms[i])
-                                print(depth)
+                                if i == index:
+                                    depth = 0
                                 if atoms[i] == [generictype, "if"]:
                                     depth += 1
                                 if atoms[i] == [generictype, "then"]:
                                     depth -= 1
                                 i += 1
-                            
                             if depth != 0:
                                 result =  "Unmatched if-then statements"
                             else:
                                 index = i
                                 result = 0
+
+                        else:
+                            depth = 1
+                            i = index + 1
+                            while i < len(atoms) and depth != 0:
+                                if atoms[i] == [generictype, "if"]:
+                                    depth += 1
+                                if atoms[i] == [generictype, "then"]:
+                                    depth -= 1
+                                i += 1
+                            if depth !=0:
+                                index = i
+                                result = "Unmatched if-then statements"
+                            else:
+                                result = atomeval(atoms[index + 1:i - 1])
+                                index = i
                                 
-                            
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
                     if result != 0:
                         return "Atom #" + str(index) + ": " + str(result)   
-  
+
+        index += 1
     return 0
 
 def definebuiltin():

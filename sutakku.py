@@ -130,6 +130,8 @@ def atomeval(atoms):
                         result = definebuiltin()
                     elif atoms[index][1] == "stack":
                         result = stackbuiltin()
+                    elif atoms[index][1] == "newstack":
+                        result = newstackbuiltin()
                     elif atoms[index][1] == "+":
                         result = addbuiltin()
                     elif atoms[index][1] == "-":
@@ -218,22 +220,35 @@ def definebuiltin():
     return 0
 
 #takes a string and changes the current stack to that stack.
-#If the stack doesn't exist, it is created
+#If the stack doesn't exist, it throws an error
 def stackbuiltin():
     global stackname
     global metastack
+    
     if metastack[stackname] == []:
-        return "Stack must contain at least one atom to make/change current stack"
+        return "Stack must contain at least one atom to change current stack"
     if metastack[stackname][-1][1] in metastack:
-        stackname = metastack[stackname].pop()
-        stackname = stackname[1]
+        stackname = metastack[stackname].pop().pop()
         return 0
     else:
-        stackname = metastack[stackname].pop()
-        stackname = stackname[1]
+        return "Stack " + metastack[stackname].pop().pop() + " does not exist."
+
+
+
+#makes a new stack if it does not exist
+def newstackbuiltin():
+    global stackname
+    global metastack
+    
+    if metastack[stackname] == []:
+        return "Stack must contain at least one atom to make a new stack"
+    if metastack[stackname][-1][1] in metastack:
+        return "Stack " + metastack[stackname].pop().pop() + " already exists"
+    else:
+        stackname = metastack[stackname].pop().pop()
         metastack[stackname] = []
         return 0
-
+    
 # adds the top two atoms of the stack. They must be numeric (innttype or
 #floattype)
 #this terminology isn't 100% correct

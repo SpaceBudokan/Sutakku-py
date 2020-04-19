@@ -142,6 +142,8 @@ def atomeval(atoms):
                         result = greaterthanbuiltin()
                     elif atoms[index][1] == "<":
                         result = lessthanbuiltin()
+                    elif atoms[index][1] == "=":
+                        result = equalbuiltin()
                     elif atoms[index][1] == "top":
                         result = topbuiltin()
                     elif atoms[index][1] == "pop":
@@ -192,6 +194,8 @@ def atomeval(atoms):
                         result = pullbuiltin()
                     elif atoms[index] == [generictype, "bury"]:
                         result = burybuiltin()
+                    elif atoms[index] == [generictype, "cat"]:
+                        result = catbuiltin()
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
@@ -201,6 +205,7 @@ def atomeval(atoms):
         index += 1
     return 0
 
+#defines a macro
 def definebuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack requires at least two atoms for definition"
@@ -210,6 +215,8 @@ def definebuiltin():
     macrotable[key] = definition  
     return 0
 
+#takes a string and changes the current stack to that stack.
+#If the stack doesn't exist, it is created
 def stackbuiltin():
     global stackname
     global metastack
@@ -225,6 +232,8 @@ def stackbuiltin():
         metastack[stackname] = []
         return 0
 
+# adds the top two atoms of the stack. They must be numeric (innttype or
+#floattype)
 #this terminology isn't 100% correct
 def addbuiltin():
     if len(metastack[stackname]) < 2:
@@ -247,7 +256,7 @@ def addbuiltin():
             
         return 0
         
-        
+#subtracts the top atom from the second atom       
 # the proper terms for subtraction aren't "addends"or "sums." I don't care.
 def subtractbuiltin():
     if len(metastack[stackname]) < 2:
@@ -270,7 +279,7 @@ def subtractbuiltin():
             
     return 0
         
-
+#multiplies the top two atoms
 def multiplybuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack must be at least two atoms for \"*\""
@@ -292,7 +301,7 @@ def multiplybuiltin():
             
         return 0
 
-
+#divides the second atom by the top atom
 def dividebuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack must be at least two atoms for \"*\""
@@ -314,7 +323,8 @@ def dividebuiltin():
             quotient = int(dividend[1]) / int(divisor[1])
             atomeval([[inttype, str(quotient)]])
         return 0
-    
+
+#detects if the second atom is greater than the top atom
 def greaterthanbuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack must be at least two atoms for \">\""
@@ -339,7 +349,7 @@ def greaterthanbuiltin():
             atomeval([[inttype, 0]])
     return 0
 
-
+#detects if the second atoms is less than the top atom
 def lessthanbuiltin():
     if len(metastack[stackname]) < 2:
         return "Stack must be at least two atoms for \">\""
@@ -364,6 +374,21 @@ def lessthanbuiltin():
             atomeval([[inttype, 0]])
     return 0
 
+#if if top two atoms are different, push integer 0, else push integer 1
+def equalbuiltin():
+    if len(metastack[stackname]) < 2:
+        return "Stack must be at least two atoms for \"=\""
+    else:
+        top = metastack[stackname].pop()
+        second = metastack[stackname].pop()
+        if top == second:
+            metastack[stackname].append([inttype, "1"])
+            return 0
+        else:
+            metastack[stackname].append([inttype, "0"])
+            return 0
+        
+
 #print the top of stack
 def topbuiltin():
     if len(metastack[stackname]) < 1:
@@ -372,14 +397,14 @@ def topbuiltin():
         print(metastack[stackname][-1][1])
         return 0
 
-
+#discards the top atom
 def popbuiltin():
     if len(metastack[stackname]) < 1:
         return stackname + " is empty"
     else:
         metastack[stackname].pop()
         return 0
-
+#duplicates the top atom
 def dupbuiltin():
     if len(metastack[stackname]) < 1:
         return "Stack must be at least one atom for \"dup\""
@@ -387,6 +412,7 @@ def dupbuiltin():
         metastack[stackname].append(metastack[stackname][-1])
         return 0
 
+#sends the top atom to be parsed and evaluated
 def evalbuiltin():
     if len(metastack[stackname]) < 1:
         return stackname + " is empty"
@@ -395,7 +421,7 @@ def evalbuiltin():
         parsed = parse(toparse[1])
         result = atomeval(parsed)
         return result
-
+#pops an atom off the current stack and pushes it onto another
 def tobuiltin():
     global stackname
     if len(metastack[stackname]) < 2:
@@ -409,13 +435,11 @@ def tobuiltin():
             return 0
         else:
             return metastack[stackname][-1][1] + " is not a stack"
-
+#pulls an atom up from the bottom of the stack (after the input has been popped)
 def pullbuiltin():
-    print(int(len(metastack[stackname])))
-    print(int(metastack[stackname][-1][1]))
     if metastack[stackname][-1][0] != inttype:
         return "'pull' requires integer"
-    elif len(metastack[stackname])-1 < int(metastack[stackname][-1][1]):
+    elif len(metastack[stackname]) - 1 <= int(metastack[stackname][-1][1]):
         metastack[stackname].pop()
         return "Stack is not deep enough"
     else:
@@ -424,21 +448,32 @@ def pullbuiltin():
         pulledelement = metastack[stackname].pop(numpull)
         metastack[stackname].append(pulledelement)
         return 0
-
+#takes the top atom and buries in the stack (after input has been popped)
 def burybuiltin():
     if metastack[stackname][-1][0] != inttype:
         return "'bury' requires integer"
-    elif len(metastack[stackname]) < int(metastack[stackname][-1][1]) - 1:
+    elif len(metastack[stackname]) - 1 <= int(metastack[stackname][-1][1]):
         metastack[stackname].pop()
         return "Stack is not deep enough"
     else:
-        numpull = metastack[stackname].pop()
-        numpull = -1 - int(numpull[1])
-        pulledelement = metastack[stackname].pop(numpull)
-        metastack[stackname].insert(numpull, pulledelement)
+        finalnum = metastack[stackname].pop()
+        finalnum = -int(finalnum[1])
+        pulledelement = metastack[stackname].pop()
+        metastack[stackname].insert(finalnum, pulledelement)
         return 0
 
-
+#concatenates two atoms together. Result pushed to stack as string
+def catbuiltin():
+    if len(metastack[stackname]) < 2:
+        return "Stack requires at least two atoms for concatenation"
+    else:
+        top = metastack[stackname].pop()
+        top = top[1]
+        second = metastack[stackname].pop()
+        second = second[1]
+        metastack[stackname].append([stringtype, second+top])
+        return 0
+    
 
 #main
 

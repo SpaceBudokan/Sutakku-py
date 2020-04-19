@@ -196,6 +196,8 @@ def atomeval(atoms):
                         result = burybuiltin()
                     elif atoms[index] == [generictype, "cat"]:
                         result = catbuiltin()
+                    elif atoms[index] == [generictype, "atomize"]:
+                        result = atomizebuiltin()
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
@@ -473,7 +475,27 @@ def catbuiltin():
         second = second[1]
         metastack[stackname].append([stringtype, second+top])
         return 0
-    
+
+#parses but doesn't eval. Pushes all atoms to stack as strings.
+#needs to be fixed
+def atomizebuiltin():
+    if len(metastack[stackname]) < 1:
+        return "Stack must contain at least one atom to atomize"
+    elif metastack[stackname][-1][0] != stringtype:
+        return "Only strings can be atomized"
+    else:
+        parsed = metastack[stackname].pop()
+        parsed = parsed[1]
+        parsed = parse(parsed)
+        for i in range(len(parsed)):
+            if parsed[i][0] == stringtype:
+                metastack[stackname].append("[" + parsed[i][1] + "]")
+            else:
+                parsed[i][0] = stringtype
+                metastack[stackname].append(parsed[i])
+        return 0
+            
+            
 
 #main
 

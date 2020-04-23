@@ -132,6 +132,8 @@ def atomeval(atoms):
                         result = stackbuiltin()
                     elif atoms[index][1] == "newstack":
                         result = newstackbuiltin()
+                    elif atoms[index][1] == "pstack":
+                        result = pstackbuiltin()
                     elif atoms[index][1] == "+":
                         result = addbuiltin()
                     elif atoms[index][1] == "-":
@@ -156,6 +158,8 @@ def atomeval(atoms):
                         result = evalbuiltin()
                     elif atoms[index][1] == "to":
                         result = tobuiltin()
+                    elif atoms[index][1] == "from":
+                        result = frombuiltin()
                     elif atoms[index][1] == "if":
                         if len(metastack[stackname]) < 1:
                             result = "Stack requires at least one atom for branching"
@@ -248,7 +252,25 @@ def newstackbuiltin():
         stackname = metastack[stackname].pop().pop()
         metastack[stackname] = []
         return 0
-    
+
+
+#prints the stack
+def pstackbuiltin():
+    if len(metastack[stackname]) < 1:
+        print(stackname + " is empty")
+    else:
+        print(stackname + ":")
+        for i in range(len(metastack[stackname])):
+            entry = metastack[stackname][-1 - i]
+            if entry[0] == inttype:
+                tipe = "INT"
+            elif entry[0] == floattype:
+                tipe = "FLT"
+            elif entry[0] == stringtype:
+                tipe = "STR"
+            print(str(i) + "\t" + entry[1] + " : " + tipe)
+    return 0
+                      
 # adds the top two atoms of the stack. They must be numeric (innttype or
 #floattype)
 #this terminology isn't 100% correct
@@ -452,6 +474,25 @@ def tobuiltin():
             return 0
         else:
             return metastack[stackname][-1][1] + " is not a stack"
+
+
+#pops an atoms off another stack and pushes it to the currnt stack
+def frombuiltin():
+    if len(metastack[stackname]) < 1:
+        return "Stack " + stackname + " is empty"
+    else:
+        otherstack = metastack[stackname].pop().pop()
+        if otherstack in metastack:
+           if len(metastack[otherstack]) < 1:
+               return "Stack " + otherstack + " is empty"
+           else:
+               popped = metastack[otherstack].pop()
+               metastack[stackname].append(popped)
+               return 0
+        else:
+           return "Stack " + otherstack + " does not exist"
+
+           
 #pulls an atom up from the bottom of the stack (after the input has been popped)
 def pullbuiltin():
     if metastack[stackname][-1][0] != inttype:

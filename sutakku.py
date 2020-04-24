@@ -82,7 +82,6 @@ def parse(ptext):
                             depth -= 1
 
                         i += 1
-
             #then we check for anything else
             if i !=len(ptext):
                 if ptext[i] != " " and i < len(ptext):
@@ -111,21 +110,22 @@ def atomeval(atoms):
     while index < len(atoms):
         if atoms[index][0] == stringtype:
             metastack[stackname].append(atoms[index])
+            result = 0
         elif atoms[index][1] in macrotable:
             toparse = macrotable[atoms[index][1]]
             parsed = parse(toparse[1])
             result = atomeval(parsed)
-            return result
         else:
             try:
                 int(atoms[index][1])
                 metastack[stackname].append([inttype, atoms[index][1]])
+                result = 0
             except:
                 try:
                     float(atoms[index][1])
                     metastack[stackname].append([floattype, atoms[index][1]])
-                except:
                     result = 0
+                except:
                     if atoms[index][1] == "define":
                         result = definebuiltin()
                     elif atoms[index][1] == "stack":
@@ -209,10 +209,10 @@ def atomeval(atoms):
                     else:
                         result = "Atom \"" + atoms[index][1] +"\" undefined"
                         
-                    if result != 0:
-                        return "Atom #" + str(index) + ": " + str(result)   
-
         index += 1
+        
+    if result != 0:
+        return "Atom #" + str(index) + ": " + str(result) 
     return 0
 
 #defines a macro
@@ -568,9 +568,10 @@ while typedline != "bye":
     typedline = input(stackname + ">")
     if typedline != "bye":
         atoms = parse(typedline)
-        result = atomeval(atoms)
-        if result != 0:
-            print(result)
+        if atoms != []:
+            result = atomeval(atoms)
+            if result != 0:
+                print(result)
 #        print(metastack)    #for debugging
 
 print("Goodbye! I'll miss you...")

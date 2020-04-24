@@ -249,8 +249,8 @@ def newstackbuiltin():
     if metastack[stackname][-1][1] in metastack:
         return "Stack " + metastack[stackname].pop().pop() + " already exists"
     else:
-        stackname = metastack[stackname].pop().pop()
-        metastack[stackname] = []
+        newstack = metastack[stackname].pop().pop()
+        metastack[newstack] = []
         return 0
 
 
@@ -268,7 +268,7 @@ def pstackbuiltin():
                 tipe = "FLT"
             elif entry[0] == stringtype:
                 tipe = "STR"
-            print(str(i) + "\t" + entry[1] + " : " + tipe)
+            print(str(i) + ":" + tipe + "\t" + entry[1])
     return 0
                       
 # adds the top two atoms of the stack. They must be numeric (innttype or
@@ -476,7 +476,7 @@ def tobuiltin():
             return metastack[stackname][-1][1] + " is not a stack"
 
 
-#pops an atoms off another stack and pushes it to the currnt stack
+#pops an atoms off another stack and pushes it to the current stack
 def frombuiltin():
     if len(metastack[stackname]) < 1:
         return "Stack " + stackname + " is empty"
@@ -569,6 +569,6 @@ while typedline != "bye":
         result = atomeval(atoms)
         if result != 0:
             print(result)
-        print(metastack)
+#        print(metastack)    #for debugging
 
 print("Goodbye! I'll miss you...")

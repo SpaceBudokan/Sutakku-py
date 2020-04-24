@@ -181,8 +181,10 @@ def atomeval(atoms):
                                 result = 0
                         else:
                             depth = 1
-                            i = index + 1
+                            i = index
                             while i < len(atoms) and depth != 0:
+                                if i == index:
+                                    depth = 0
                                 if atoms[i] == [generictype, "if"]:
                                     depth += 1
                                 if atoms[i] == [generictype, "then"]:
@@ -545,7 +547,7 @@ def atomizebuiltin():
         parsed = parse(parsed)
         for i in range(len(parsed)):
             if parsed[i][0] == stringtype:
-                metastack[stackname].append("[" + parsed[i][1] + "]")
+                metastack[stackname].append([stringtype, "[" + parsed[i][1] + "]"])
             else:
                 parsed[i][0] = stringtype
                 metastack[stackname].append(parsed[i])

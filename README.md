@@ -51,16 +51,18 @@ main>top
 this is a quote [nested in another] quote
 ```
 
-Use `pop` to remove the top element of the stack.
-
+`pop` removes the top element of the stack
 ```
+main>pstack
+main:
+0:STR	rabbit
+1:STR	monkey
+2:STR	horse
 main>pop
 main>pstack
 main:
-0:STR	this is a string
-1:FLT	3.0
-2:INT	2
-3:INT	1
+0:STR	monkey
+1:STR	horse
 ```
 
 Of course the basic math operators are here. `+ - * /` all work as expected
@@ -74,19 +76,6 @@ main>2 2 * top
 4
 main>6 2 / top
 3
-```
-
-`pop` removes the top element of the stack
-main>pstack
-main:
-0:STR	rabbit
-1:STR	monkey
-2:STR	horse
-main>pop
-main>pstack
-main:
-0:STR	monkey
-1:STR	horse
 ```
 
 In Sutakku, integer 0 is false, and anything else is true. Greater than (>) and less than (<) must both be of a numerical (integer or float) type, OR both be of string type. Equality (=) checks both the type and content of an atom.

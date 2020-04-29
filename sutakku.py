@@ -246,7 +246,7 @@ def newstackbuiltin():
     global stackname
     global metastack
     
-    if metastack[stackname] == []:
+    if len(metastack[stackname]) < 1:
         return "Stack must contain at least one atom to make a new stack"
     if metastack[stackname][-1][1] in metastack:
         return "Stack " + metastack[stackname].pop().pop() + " already exists"
@@ -288,12 +288,12 @@ def addbuiltin():
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
             thesum = float(addend2[1]) + float(addend1[1])
-            atomeval([[floattype, str(thesum)]])
+            atomeval([[generictype, str(thesum)]])
         else:
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
             thesum = int(addend2[1]) + int(addend1[1])
-            atomeval([[inttype, str(thesum)]])
+            atomeval([[generictype, str(thesum)]])
             
         return 0
         
@@ -311,12 +311,12 @@ def subtractbuiltin():
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
             thesum = float(addend2[1]) -  float(addend1[1])
-            atomeval([[floattype, str(thesum)]])
+            atomeval([[generictype, str(thesum)]])
         else:
             addend1 = metastack[stackname].pop()
             addend2 = metastack[stackname].pop()
             thesum = int(addend2[1]) - int(addend1[1])
-            atomeval([[inttype, str(thesum)]])
+            atomeval([[generictype, str(thesum)]])
             
     return 0
         
@@ -333,12 +333,12 @@ def multiplybuiltin():
             multiplier = metastack[stackname].pop()
             multiplicand = metastack[stackname].pop()
             product = float(multiplicand[1]) *  float(multiplier[1])
-            atomeval([[floattype, str(product)]])
+            atomeval([[generictype, str(product)]])
         else:
             multiplier = metastack[stackname].pop()
             multiplicand = metastack[stackname].pop()
             product = int(multiplicand[1]) * int(multiplier[1])
-            atomeval([[inttype, str(product)]])
+            atomeval([[generictype, str(product)]])
             
         return 0
 
@@ -357,12 +357,12 @@ def dividebuiltin():
             divisor = metastack[stackname].pop()
             dividend = metastack[stackname].pop()
             quotient = float(dividend[1]) /  float(divisor[1])
-            atomeval([[floattype, str(quotient)]])
+            atomeval([[generictype, str(quotient)]])
         else:
             divisor = metastack[stackname].pop()
             dividend = metastack[stackname].pop()
             quotient = int(dividend[1]) / int(divisor[1])
-            atomeval([[inttype, str(quotient)]])
+            atomeval([[generictype, str(quotient)]])
         return 0
 
 #detects if the second atom is greater than the top atom
